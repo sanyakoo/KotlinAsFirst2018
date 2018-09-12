@@ -3,6 +3,17 @@ package lesson1.task1
 
 import kotlin.math.*
 
+val hours_to_seconds = 3600
+val minutes_to_seconds = 60
+val sagenes_to_metres = (4.445 * 48) / 100
+val arshins_to_metres = (4.445 * 16) / 100
+val vershoks_to_metres = 4.445 / 100
+val grad_to_sec = 3600
+val min_to_sec = 60
+val sec_to_radian = 0.00000485
+val div1 = 100
+val mod1 = 10
+
 /**
  * Пример
  *
@@ -58,8 +69,9 @@ fun main(args: Array<String>) {
  * Пользователь задает время в часах, минутах и секундах, например, 8:20:35.
  * Рассчитать время в секундах, прошедшее с начала суток (30035 в данном случае).
  */
-fun seconds(hours: Int, minutes: Int, seconds: Int): Int = TODO()
-
+fun seconds(hours: Int, minutes: Int, seconds: Int): Int {
+    return (hours * hours_to_seconds + minutes * minutes_to_seconds + seconds)
+}
 /**
  * Тривиальная
  *
@@ -67,16 +79,18 @@ fun seconds(hours: Int, minutes: Int, seconds: Int): Int = TODO()
  * Определить длину того же отрезка в метрах (в данном случае 18.98).
  * 1 сажень = 3 аршина = 48 вершков, 1 вершок = 4.445 см.
  */
-fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = TODO()
-
+fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double {
+    return (sagenes * sagenes_to_metres + arshins * arshins_to_metres + vershoks * vershoks_to_metres)
+}
 /**
  * Тривиальная
  *
  * Пользователь задает угол в градусах, минутах и секундах (например, 36 градусов 14 минут 35 секунд).
  * Вывести значение того же угла в радианах (например, 0.63256).
  */
-fun angleInRadian(grad: Int, min: Int, sec: Int): Double = TODO()
-
+fun angleInRadian(grad: Int, min: Int, sec: Int): Double {
+    return ((grad * grad_to_sec + min * min_to_sec + sec) * sec_to_radian)
+}
 /**
  * Тривиальная
  *
@@ -91,8 +105,9 @@ fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = TODO()
  * Пользователь задает целое число, большее 100 (например, 3801).
  * Определить третью цифру справа в этом числе (в данном случае 8).
  */
-fun thirdDigit(number: Int): Int = TODO()
-
+fun thirdDigit(number: Int): Int {
+    return ((number / div1) % mod1)
+}
 /**
  * Простая
  *
