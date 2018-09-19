@@ -92,7 +92,15 @@ fun angleInRadian(grad: Int, min: Int, sec: Int) = (grad * grad_to_sec + min * m
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double = TODO()
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+    val new_x1 = abs(x1)
+    val new_x2 = abs(x2)
+    val new_y1 = abs(y1)
+    val new_y2 = abs(y2)
+    val x_summ = pow((new_x1 + new_x2), 2)
+    val y_summ = pow((new_y1 + new_y2), 2)
+    return (sqrt(x_summ + y_summ))
+}
 
 /**
  * Простая
