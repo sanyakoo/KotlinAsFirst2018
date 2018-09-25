@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson1.task1
 
 import kotlin.math.*
@@ -65,7 +66,8 @@ fun main(args: Array<String>) {
  * Пользователь задает время в часах, минутах и секундах, например, 8:20:35.
  * Рассчитать время в секундах, прошедшее с начала суток (30035 в данном случае).
  */
-fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours * HOURS_TO_SECONDS + minutes * MINUTES_TO_SECONDS + seconds
+fun seconds(hours: Int, minutes: Int, seconds: Int): Int =
+        hours * HOURS_TO_SECONDS + minutes * MINUTES_TO_SECONDS + seconds
 /**
  * Тривиальная
  *
@@ -73,7 +75,8 @@ fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours * HOURS_TO_SECO
  * Определить длину того же отрезка в метрах (в данном случае 18.98).
  * 1 сажень = 3 аршина = 48 вершков, 1 вершок = 4.445 см.
  */
-fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double = sagenes * SAGENES_TO_METRES + arshins * ARSHINS_TO_METRES + vershoks * VERSHOKS_TO_METRES
+fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double =
+        sagenes * SAGENES_TO_METRES + arshins * ARSHINS_TO_METRES + vershoks * VERSHOKS_TO_METRES
 /**
  * Тривиальная
  *
@@ -89,8 +92,8 @@ fun angleInRadian(grad: Int, min: Int, sec: Int): Double = PI * (grad + (min + s
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
 fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double {
-    val expression_1 = x2 - x1
-    val expression_2 = y2 - y1
+    val length_by_x = x2 - x1
+    val length_by_y = y2 - y1
     val radicand = sqr(expression_1) + sqr(expression_2)
     return sqrt(radicand)
 }
@@ -109,7 +112,8 @@ fun thirdDigit(number: Int): Int = (number / 100) % 10
  * прибыл на станцию назначения в h2 часов m2 минут того же дня (например в 13:01).
  * Определите время поезда в пути в минутах (в данном случае 216).
  */
-fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int = (hoursArrive * 60 + minutesArrive) - (hoursDepart * 60 + minutesDepart)
+fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int =
+        (hoursArrive * 60 + minutesArrive) - (hoursDepart * 60 + minutesDepart)
 /**
  * Простая
  *
