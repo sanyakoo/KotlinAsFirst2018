@@ -3,7 +3,6 @@
 package lesson1.task1
 
 import kotlin.math.*
-import java.lang.Math
 
 const val HOURS_TO_SECONDS = 3600
 const val MINUTES_TO_SECONDS = 60
@@ -94,7 +93,7 @@ fun angleInRadian(grad: Int, min: Int, sec: Int): Double = PI * (grad + (min + s
 fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double {
     val length_by_x = x2 - x1
     val length_by_y = y2 - y1
-    val radicand = sqr(expression_1) + sqr(expression_2)
+    val radicand = sqr(length_by_x) + sqr(length_by_y)
     return sqrt(radicand)
 }
 
@@ -123,7 +122,7 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  */
 fun accountInThreeYears(initial: Int, percent: Int): Double {
     val part_of_formula = (1 + percent.toDouble() / 100)
-    return initial.toDouble() * pow(partOfFormula, 3.0)
+    return initial.toDouble() * pow(part_of_formula, 3.0)
 }
 
 /**
