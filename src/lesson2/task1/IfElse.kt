@@ -137,14 +137,14 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     val maxNumber = maxOf(a, b, c)
-    val minNumber = minOf(a, b, c)
-    val averageNumber = a + b + c - maxNumber - minNumber
+    val temp = maxNumber * maxNumber * 2 - a * a - b * b - c * c
+    if (maxNumber > a + b + c - maxNumber) {
+        return -1
+    }
     return when {
-        maxNumber > minNumber + averageNumber -> -1
-        sqr(maxNumber) < sqr(minNumber) + sqr(averageNumber) -> 0
-        sqr(maxNumber) > sqr(minNumber) + sqr(averageNumber) -> 2
-        sqr(maxNumber) == sqr(minNumber) + sqr(averageNumber) -> 1
-        else -> -1
+        temp > 0 -> 2
+        temp < 0 -> 0
+        else -> 1
     }
 }
 /**

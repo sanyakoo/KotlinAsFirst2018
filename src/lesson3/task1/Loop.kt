@@ -72,14 +72,14 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var numscounter = 0
-    var ournumber = n
+    var numsCounter = 0
+    var ourNumber = n
     if (n == 0) return 1
-    while (abs(ournumber) > 0) {
-        numscounter++
-        ournumber /= 10
+    while (abs(ourNumber) > 0) {
+        numsCounter++
+        ourNumber /= 10
     }
-    return numscounter
+    return numsCounter
 }
 /**
  * Простая
@@ -88,16 +88,16 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var exprevnum = 1
-    var prevnum = 1
-    var currentnum = 0
+    var exPrevNum = 1
+    var prevNum = 1
+    var currentNum = 0
     if ((n == 1) || (n == 2)) return 1
     else for (i in 1..n-2) {
-        currentnum = exprevnum + prevnum
-        prevnum = exprevnum
-        exprevnum = currentnum
+        currentNum = exPrevNum + prevNum
+        prevNum = exPrevNum
+        exPrevNum = currentNum
     }
-    return currentnum
+    return currentNum
 }
 /**
  * Простая
@@ -106,9 +106,15 @@ fun fib(n: Int): Int {
  * минимальное число k, которое делится и на m и на n без остатка
  */
 fun lcm(m: Int, n: Int): Int {
-    var multiply = 1
-    while (((multiply % m) != 0) || ((multiply % n) != 0)) multiply++
-    return multiply
+    val maximum = max(m, n)
+    val minimum = min(m, n)
+    var lcm = maximum
+
+    while (lcm % minimum != 0) {
+        lcm += maximum
+    }
+
+    return lcm
 }
 /**
  * Простая
@@ -116,20 +122,19 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var ourmindivisor = 2
-    while (n % ourmindivisor != 0) ourmindivisor++
-    return ourmindivisor
+    var minDiv = 0
+    for (i in 2..n) if (n % i == 0) {
+        minDiv = i
+        break
+    }
+    return minDiv
 }
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var ourmaxdivisor = n - 1
-    while (n % ourmaxdivisor !=0) ourmaxdivisor--
-    return ourmaxdivisor
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 /**
  * Простая
  *
@@ -137,9 +142,12 @@ fun maxDivisor(n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean =
-        ((minDivisor(m) != minDivisor(n)) && ((maxOf(m,n) % minOf(m,n)) != 0)) || (minOf(m,n) == 1)
+fun isCoPrime(m: Int, n: Int): Boolean {
+    if((m == 1) || (n == 1)) return true
+    if(max(m, n) % min(m, n) == 0) return false
 
+    return lcm(m, n) == m * n
+}
 /**
  * Простая
  *
@@ -147,13 +155,11 @@ fun isCoPrime(m: Int, n: Int): Boolean =
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean {
-    var oursquare = 1
-    if (n == Int.MAX_VALUE) return false
-    while ( sqr(oursquare+1) <= n)  {
-        oursquare++
-    }
-    return (sqr(oursquare)  >= m )
+fun squareBetweenExists(m: Int, n: Int): Boolean{
+    val k = Math.sqrt(m.toDouble()).toInt()
+    val l = Math.sqrt(n.toDouble()).toInt()
+
+    return (k * k == m) || (l * l == n) || (k != l)
 }
 /**
  * Средняя
@@ -172,14 +178,14 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  * этого для какого-либо начального X > 0.
  */
 fun collatzSteps(x: Int): Int {
-    var stepsnum = 0
-    var interimnum = x
-    while (interimnum != 1) {
-        stepsnum++
-        if ((interimnum % 2) == 0)  interimnum /= 2
-        else interimnum = 3 * interimnum + 1
+    var stepsNum = 0
+    var interimNum = x
+    while (interimNum != 1) {
+        stepsNum++
+        if ((interimNum % 2) == 0)  interimNum /= 2
+        else interimNum = 3 * interimNum + 1
     }
-    return stepsnum
+    return stepsNum
 }
 /**
  * Средняя
@@ -213,9 +219,6 @@ fun sin(x: Double, eps: Double): Double {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun cos(x: Double, eps: Double): Double {
-    fun CosEl(y: Double, n: Int) : Double {
-        return  pow(y, n * 1.0) /  factorial(n)
-    }
     var k = 1.0
     var n = 0
     var cos1 = 0.0
@@ -224,7 +227,7 @@ fun cos(x: Double, eps: Double): Double {
     while (abs(cos2 - cos1) >= eps) {
         cos1 = cos2
         n += 2
-        cos2 = cos1 + CosEl(z , n) * pow(-1.0,k)
+        cos2 = cos1 + SinEL(z , n) * pow(-1.0,k)
         k++
     }
     return cos2
@@ -238,21 +241,14 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var k = 0
-    var x = n
-    var m = 0.0
-    while (x >= 1) {
-        x /= 10
-        k++
+    var oldN = n
+    var result = 0
+    while (oldN != 0) {
+        result *= 10
+        result += oldN % 10
+        oldN /= 10
     }
-    x = n
-    var a : Double
-    for (i in k downTo 1) {
-        a = (x % 10) * pow(10.0, (i - 1.0))
-        m += a
-        x /= 10
-    }
-    return m.toInt()
+    return result
 }
 /**
  * Средняя
@@ -275,9 +271,9 @@ fun isPalindrome(n: Int): Boolean = revert(n) == n
  */
 fun hasDifferentDigits(n: Int): Boolean {
     var num = n
-    val lastnumber = num % 10
+    val lastNumber = num % 10
     while (num != 0) {
-        if (lastnumber != num % 10) {
+        if (lastNumber != num % 10) {
             return true
         }
         num /= 10
