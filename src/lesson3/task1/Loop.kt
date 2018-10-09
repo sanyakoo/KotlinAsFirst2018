@@ -3,7 +3,7 @@ package lesson3.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import java.lang.Math.pow
+import java.lang.Math.*
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -108,13 +108,13 @@ fun fib(n: Int): Int {
 fun lcm(m: Int, n: Int): Int {
     val maximum = max(m, n)
     val minimum = min(m, n)
-    var lcm = maximum
+    var leastCommonMultiply = maximum
 
-    while (lcm % minimum != 0) {
-        lcm += maximum
+    while (leastCommonMultiply % minimum != 0) {
+        leastCommonMultiply += maximum
     }
 
-    return lcm
+    return leastCommonMultiply
 }
 /**
  * Простая
@@ -142,12 +142,7 @@ fun maxDivisor(n: Int): Int = n / minDivisor(n)
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    if((m == 1) || (n == 1)) return true
-    if(max(m, n) % min(m, n) == 0) return false
-
-    return lcm(m, n) == m * n
-}
+fun isCoPrime(m: Int, n: Int): Boolean = maxOf(m, n) % minDivisor((minOf(m, n))) != 0
 /**
  * Простая
  *
@@ -187,6 +182,12 @@ fun collatzSteps(x: Int): Int {
     }
     return stepsNum
 }
+/*
+вспомогательная функция для следующих заданий
+*/
+fun funEl(y: Double, n: Int) : Double {
+    return  pow(y, n * 1.0) /  factorial(n)
+}
 /**
  * Средняя
  *
@@ -195,9 +196,6 @@ fun collatzSteps(x: Int): Int {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun sin(x: Double, eps: Double): Double {
-    fun SinEl(y: Double, n: Int) : Double {
-        return  pow(y, n * 1.0) /  factorial(n)
-    }
     var k = 1.0
     var n = 1
     var sin1 = 0.0
@@ -205,7 +203,7 @@ fun sin(x: Double, eps: Double): Double {
     while (abs(sin2 - sin1) >= eps) {
         sin1 = sin2
         n += 2
-        sin2 = sin1 + SinEl(x, n) * pow(-1.0,k)
+        sin2 = sin1 + funEl(x, n) * pow(-1.0, k)
         k++
     }
     return sin2
@@ -227,7 +225,7 @@ fun cos(x: Double, eps: Double): Double {
     while (abs(cos2 - cos1) >= eps) {
         cos1 = cos2
         n += 2
-        cos2 = cos1 + SinEL(z , n) * pow(-1.0,k)
+        cos2 = cos1 + funEl(z, n) * pow(-1.0, k)
         k++
     }
     return cos2
@@ -289,8 +287,18 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = numberSearch(n, ::sqr)
+fun squareSequenceDigit(n: Int): Int {
+    var ourStringLenght = 0
+    var numSqr = 0
+    var numberFromString = 1
 
+    while (ourStringLenght < n) {
+        numSqr = sqr(numberFromString)
+        ourStringLenght += digitNumber(numSqr)
+        numberFromString++
+    }
+    return (numSqr / pow(10.0, (ourStringLenght - n).toDouble()) % 10).toInt()
+}
 /**
  * Сложная
  *
@@ -300,4 +308,15 @@ fun squareSequenceDigit(n: Int): Int = numberSearch(n, ::sqr)
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = numberSearch(n, ::fib)
+fun fibSequenceDigit(n: Int): Int {
+    var ourStringLength = 0
+    var numFib = 0
+    var numberFromString = 1
+
+    while (ourStringLength < n) {
+        numFib = fib(numberFromString)
+        ourStringLength += digitNumber(numFib)
+        numberFromString++
+    }
+    return (numFib / pow(10.0, (ourStringLength - n).toDouble()) % 10).toInt()
+}
