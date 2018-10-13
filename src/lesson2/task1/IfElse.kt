@@ -138,7 +138,7 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     val maxNumber = maxOf(a, b, c)
     val temp = maxNumber * maxNumber * 2 - a * a - b * b - c * c
-    if (maxNumber > a + b + c - maxNumber) {
+    if (maxNumber >= a + b + c - maxNumber) {
         return -1
     }
     return when {

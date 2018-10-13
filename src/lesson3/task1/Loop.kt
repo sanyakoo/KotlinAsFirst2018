@@ -123,10 +123,13 @@ fun lcm(m: Int, n: Int): Int {
  */
 fun minDivisor(n: Int): Int {
     var minDiv = 0
-    for (i in 2..n) if (n % i == 0) {
+    for (i in 2..sqr(n)) if (n % i == 0) {
         minDiv = i
         break
     }
+        if (minDiv == 0) {
+            minDiv = n
+        }
     return minDiv
 }
 /**
@@ -142,7 +145,15 @@ fun maxDivisor(n: Int): Int = n / minDivisor(n)
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = maxOf(m, n) % minDivisor((minOf(m, n))) != 0
+fun isCoPrime(m: Int, n: Int): Boolean {
+    var a = m
+    var b = n
+    while (a != b) {
+        if (a >= b) a -= b
+        else b -= a
+    }
+    return a == 1
+}
 /**
  * Простая
  *
@@ -150,12 +161,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = maxOf(m, n) % minDivisor((minOf(m, n)))
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean{
-    val k = Math.sqrt(m.toDouble()).toInt()
-    val l = Math.sqrt(n.toDouble()).toInt()
-
-    return (k * k == m) || (l * l == n) || (k != l)
-}
+fun squareBetweenExists(m: Int, n: Int): Boolean = floor(sqrt(n.toDouble())) >= ceil(sqrt(m.toDouble()))
 /**
  * Средняя
  *
@@ -196,19 +202,17 @@ fun funEl(y: Double, n: Int) : Double {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun sin(x: Double, eps: Double): Double {
-    var k = 1.0
-    var n = 1
-    var sin1 = 0.0
-    var sin2 = x % (2 * PI)
-    while (abs(sin2 - sin1) >= eps) {
-        sin1 = sin2
-        n += 2
-        sin2 = sin1 + funEl(x, n) * pow(-1.0, k)
-        k++
-    }
-    return sin2
+    val xForNormal = x % (2 * PI)
+    var i = 0
+    var sinX = xForNormal
+    var rememberNum: Double
+    do {
+        i++
+        rememberNum = pow(-1.0, i.toDouble()) * pow(xForNormal, i * 2.0 + 1) / factorial(i * 2 + 1)
+        sinX += rememberNum
+    } while (abs(rememberNum) >= eps)
+    return sinX
 }
-
 /**
  * Средняя
  *
@@ -217,20 +221,17 @@ fun sin(x: Double, eps: Double): Double {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun cos(x: Double, eps: Double): Double {
-    var k = 1.0
-    var n = 0
-    var cos1 = 0.0
-    var cos2 = 1.0
-    var z = x % (2 * PI)
-    while (abs(cos2 - cos1) >= eps) {
-        cos1 = cos2
-        n += 2
-        cos2 = cos1 + funEl(z, n) * pow(-1.0, k)
-        k++
-    }
-    return cos2
+    var i = 0
+    var cosX = 1.0
+    val xForNormal = x % (2 * PI)
+    var rememberNum: Double
+    do {
+        i++
+        rememberNum = pow(-1.0, i.toDouble()) * (pow(xForNormal, i * 2.0) / factorial(i * 2))
+        cosX += rememberNum
+    } while (abs(rememberNum) >= eps)
+    return cosX
 }
-
 /**
  * Средняя
  *
@@ -309,14 +310,17 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var ourStringLength = 0
-    var numFib = 0
-    var numberFromString = 1
-
-    while (ourStringLength < n) {
-        numFib = fib(numberFromString)
-        ourStringLength += digitNumber(numFib)
-        numberFromString++
+    var seq = 0
+    var iteration = 1
+    var count = 0
+    while (count < n) {
+        seq = fib(iteration)
+        count += digitNumber(fib(iteration))
+        iteration++
     }
-    return (numFib / pow(10.0, (ourStringLength - n).toDouble()) % 10).toInt()
+    while (count != n) {
+        count--
+        seq /= 10
+    }
+    return seq % 10
 }
