@@ -188,7 +188,7 @@ fun collatzSteps(x: Int): Int {
     }
     return stepsNum
 }
-/*
+/**
 вспомогательная функция для следующих заданий
 */
 fun funEl(y: Double, n: Int) : Double {
