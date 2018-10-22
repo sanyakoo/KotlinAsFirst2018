@@ -122,15 +122,9 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var minDiv = 0
-    for (i in 2..sqrt(n.toDouble()).toInt()) if (n % i == 0) {
-        minDiv = i
-        break
-    }
-        if (minDiv == 0) {
-            minDiv = n
-        }
-    return minDiv
+    for (i in 2..n / 2)
+        if (n % i == 0) return i
+    return n
 }
 /**
  * Простая
@@ -187,12 +181,6 @@ fun collatzSteps(x: Int): Int {
         else interimNum = 3 * interimNum + 1
     }
     return stepsNum
-}
-/**
-вспомогательная функция для следующих заданий
-*/
-fun funEl(y: Double, n: Int) : Double {
-    return  pow(y, n * 1.0) /  factorial(n)
 }
 /**
  * Средняя
@@ -279,6 +267,20 @@ fun hasDifferentDigits(n: Int): Boolean {
     }
     return false
 }
+
+/**
+ * вспомогательная функция
+ */
+fun xSequenceDigit(n: Int, func: (n: Int) -> Int): Int {
+    var num = 0
+    var count = 0
+    while (count < n) {
+        num++
+        val step = digitNumber(func(num))
+        count += step
+    }
+    return (func(num) / pow(10.0, (count - n).toDouble())).toInt() % 10
+}
 /**
  * Сложная
  *
@@ -288,18 +290,7 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int {
-    var ourStringLenght = 0
-    var numSqr = 0
-    var numberFromString = 1
-
-    while (ourStringLenght < n) {
-        numSqr = sqr(numberFromString)
-        ourStringLenght += digitNumber(numSqr)
-        numberFromString++
-    }
-    return (numSqr / pow(10.0, (ourStringLenght - n).toDouble()) % 10).toInt()
-}
+fun squareSequenceDigit(n: Int): Int = xSequenceDigit(n, ::sqr)
 /**
  * Сложная
  *
@@ -309,18 +300,6 @@ fun squareSequenceDigit(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int {
-    var seq = 0
-    var iteration = 1
-    var count = 0
-    while (count < n) {
-        seq = fib(iteration)
-        count += digitNumber(fib(iteration))
-        iteration++
-    }
-    while (count != n) {
-        count--
-        seq /= 10
-    }
-    return seq % 10
-}
+fun fibSequenceDigit(n: Int): Int = xSequenceDigit(n, ::fib)
+
+

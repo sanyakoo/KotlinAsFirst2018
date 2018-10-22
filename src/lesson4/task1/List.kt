@@ -202,18 +202,18 @@ fun accumulate(list: MutableList<Double>): MutableList<Double> {
  * Множители в списке должны располагаться по возрастанию.
  */
 fun factorize(n: Int): List<Int> {
-    var number = n
+    var num = n
     val answer = mutableListOf<Int>()
     var i = 1
-    if (isPrime(number)) return answer + number
-    while (i <= sqrt(number.toDouble()).toInt()) {
+    if (isPrime(num)) return answer + num
+    while (i <= sqrt(num.toDouble()).toInt()) {
         i++
-        if (isPrime(number)) {
-            answer += number
+        if (isPrime(num)) {
+            answer += num
             break
         } else {
-            if (number % i == 0) {
-                number /= i
+            if (num % i == 0) {
+                num /= i
                 answer += i
                 i = 1
             }
@@ -272,12 +272,12 @@ fun convertToString(n: Int, base: Int): String {
  */
 fun decimal(digits: List<Int>, base: Int): Int {
     var rank = digits.size - 1
-    var result = 0
+    var res = 0
     for (i in 0 until digits.size) {
-        result += digits[i] * pow(base.toDouble(), rank.toDouble()).toInt()
+        res += digits[i] * pow(base.toDouble(), rank.toDouble()).toInt()
         rank --
     }
-    return result
+    return res
 }
 /**
  * Сложная
