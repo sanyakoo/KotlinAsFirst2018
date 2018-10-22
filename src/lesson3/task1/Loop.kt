@@ -183,24 +183,29 @@ fun collatzSteps(x: Int): Int {
     return stepsNum
 }
 /**
+ * вспомогательная функция
+ */
+fun sinAndCos(starter: Double, x: Double, eps: Double, plus: Int): Double {
+    var i = 0
+    var starterAnswer = starter
+    var remember: Double
+    do {
+        i++
+        remember = pow(-1.0, i.toDouble()) * pow(x, i * 2.0 + plus) / factorial(i * 2 + plus)
+        starterAnswer += remember
+    } while (abs(remember) >= eps)
+    return starterAnswer
+    }
+
+fun normalize(x: Double) = x % (2 * PI)
+/**
  * Средняя
  *
  * Для заданного x рассчитать с заданной точностью eps
  * sin(x) = x - x^3 / 3! + x^5 / 5! - x^7 / 7! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun sin(x: Double, eps: Double): Double {
-    val xForNormal = x % (2 * PI)
-    var i = 0
-    var sinX = xForNormal
-    var rememberNum: Double
-    do {
-        i++
-        rememberNum = pow(-1.0, i.toDouble()) * pow(xForNormal, i * 2.0 + 1) / factorial(i * 2 + 1)
-        sinX += rememberNum
-    } while (abs(rememberNum) >= eps)
-    return sinX
-}
+fun sin(x: Double, eps: Double): Double = sinAndCos(normalize(x), normalize(x), eps, 1)
 /**
  * Средняя
  *
@@ -208,18 +213,7 @@ fun sin(x: Double, eps: Double): Double {
  * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun cos(x: Double, eps: Double): Double {
-    var i = 0
-    var cosX = 1.0
-    val xForNormal = x % (2 * PI)
-    var rememberNum: Double
-    do {
-        i++
-        rememberNum = pow(-1.0, i.toDouble()) * (pow(xForNormal, i * 2.0) / factorial(i * 2))
-        cosX += rememberNum
-    } while (abs(rememberNum) >= eps)
-    return cosX
-}
+fun cos(x: Double, eps: Double): Double = sinAndCos(1.0, normalize(x), eps, 0)
 /**
  * Средняя
  *
