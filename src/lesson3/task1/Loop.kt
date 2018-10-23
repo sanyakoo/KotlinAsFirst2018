@@ -2,6 +2,10 @@
 package lesson3.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import java.lang.Math.*
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**

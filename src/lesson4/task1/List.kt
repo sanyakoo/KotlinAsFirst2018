@@ -4,9 +4,6 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
-import java.lang.Math.*
-import lesson3.task1.isPrime
-
 /**
  * Пример
  *
