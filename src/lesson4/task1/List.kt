@@ -255,11 +255,11 @@ fun convertToString(n: Int, base: Int): String = TODO()
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
 fun decimal(digits: List<Int>, base: Int): Int {
-    var answer = 0
+    var result = 0
     for (i in 0 until digits.size) {
-        answer += digits[i] * (pow(base.toDouble(), (digits.size - 1 - i).toDouble())).toInt()
+        result += digits[i] * (pow(base.toDouble(), (digits.size - 1 - i).toDouble())).toInt()
     }
-    return answer
+    return result
 }
 
 /**
