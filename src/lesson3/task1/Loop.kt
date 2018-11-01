@@ -287,7 +287,6 @@ fun xSequenceDigit(n: Int, func: (n: Int) -> Int): Int {
     }
     return (func(num) / pow(10.0, (count - n).toDouble())).toInt() % 10
 }
-
 /**
  * Сложная
  *
