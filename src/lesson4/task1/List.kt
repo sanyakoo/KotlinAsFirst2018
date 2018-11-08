@@ -134,7 +134,7 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    var avgValue = mean(list)
+    val avgValue = mean(list)
     for (i in 0 until list.size) {
         list[i] -= avgValue
     }
@@ -230,7 +230,7 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     var number = n
     var list = listOf<Int>()
-    while (number > 0) {
+    while (number >= 0) {
         list += number % base
         number /= base
     }
@@ -245,7 +245,16 @@ fun convert(n: Int, base: Int): List<Int> {
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String {
+    val latinLetters = "abcdefghijklmnopqrstuvwxyz"
+    val convertedNum = convert(n, base)
+    var answer = ""
+    for (element in convertedNum) {
+        if (element < 10) answer += element
+        else answer += latinLetters[element - 10]
+    }
+    return answer
+}
 
 /**
  * Средняя
