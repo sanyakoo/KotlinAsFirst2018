@@ -5,7 +5,6 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
 import java.lang.Math.*
-import lesson3.task1.isPrime
 /**
  * Пример
  *
@@ -123,7 +122,7 @@ fun abs(v: List<Double>): Double = sqrt(v.map { it * it }.sum())
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size.toDouble()
+fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size
 
 /**
  * Средняя
@@ -230,10 +229,10 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     var number = n
     var list = listOf<Int>()
-    while (number >= 0) {
+    do {
         list += number % base
         number /= base
-    }
+    } while (number > 0)
     return list.reversed()
 }
 
