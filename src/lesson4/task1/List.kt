@@ -147,13 +147,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.0.
  */
-fun times(a: List<Double>, b: List<Double>): Double {
-    var answer = 0.0
-    for (i in 0 until a.size) {
-        answer += a[i] * b[i]
-    }
-    return answer
-}
+fun times(a: List<Double>, b: List<Double>): Double = a.mapIndexed { i, n -> a[i] * b[i] }.sum()
 
 /**
  * Средняя
