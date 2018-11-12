@@ -302,7 +302,7 @@ fun roman(n: Int): String {
                 answer.add(pair.second)
         } else {
             if (answer.isNotEmpty() && answer[answer.lastIndex] == numPairs[index - 1].second) {
-                answer[answer.lastIndex] = pair.second;
+                answer[answer.lastIndex] = pair.second
                 answer.add(numPairs[index - 2].second)
             } else {
                 answer.add(pair.second)
