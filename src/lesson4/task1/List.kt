@@ -163,13 +163,7 @@ fun times(a: List<Double>, b: List<Double>): Double {
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0.0 при любом x.
  */
-fun polynom(p: List<Double>, x: Double): Double {
-    var answer = 0.0
-    for (i in 0 until p.size) {
-        answer += p[i] * pow(x, i.toDouble())
-    }
-    return answer
-}
+fun polynom(p: List<Double>, x: Double): Double = p.mapIndexed { element, i -> element * pow(x, i.toDouble()) }.sum()
 
 /**
  * Средняя
@@ -245,12 +239,11 @@ fun convert(n: Int, base: Int): List<Int> {
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
 fun convertToString(n: Int, base: Int): String {
-    val latinLetters = "abcdefghijklmnopqrstuvwxyz"
     val convertedNum = convert(n, base)
     var answer = ""
     for (element in convertedNum) {
         if (element < 10) answer += element
-        else answer += latinLetters[element - 10]
+        else answer += 'a' + (element - 10)
     }
     return answer
 }
@@ -279,7 +272,15 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: str = "13c", base = 14 -> 250
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int {
+    val nums = str.map {
+        when {
+            it < 'a' -> it - '0'
+            else -> it - 'a' + 10
+        }
+    }
+    return decimal(nums, base)
+}
 
 /**
  * Сложная
@@ -289,7 +290,30 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var number = n
+    val numPairs = listOf(Pair(1000, 'M'), Pair(500, 'D'), Pair(100, 'C'), Pair(50, 'L'), Pair(10, 'X'),
+            Pair(5, 'V'), Pair(1, 'I'))
+    val answer = mutableListOf<Char>()
+    for ((index, pair) in numPairs.withIndex()) {
+        val counter = number / pair.first
+        if (counter < 4) {
+            for (i in 0 until counter)
+                answer.add(pair.second)
+        } else {
+            if (answer.isNotEmpty() && answer[answer.lastIndex] == numPairs[index - 1].second) {
+                answer[answer.lastIndex] = pair.second;
+                answer.add(numPairs[index - 2].second)
+            } else {
+                answer.add(pair.second)
+                answer.add(numPairs[index - 1].second)
+            }
+        }
+        number %= pair.first
+        if (number == 0) break
+    }
+    return answer.joinToString(separator = "")
+}
 
 /**
  * Очень сложная
