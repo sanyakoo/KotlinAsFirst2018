@@ -5,6 +5,7 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
 import java.lang.Math.*
+
 /**
  * Пример
  *
@@ -157,7 +158,7 @@ fun times(a: List<Double>, b: List<Double>): Double = a.mapIndexed { i, n -> a[i
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0.0 при любом x.
  */
-fun polynom(p: List<Double>, x: Double): Double = p.mapIndexed { element, i -> element * pow(x, i.toDouble()) }.sum()
+fun polynom(p: List<Double>, x: Double): Double = p.mapIndexed { i, element -> element * pow(x, i.toDouble()) }.sum()
 
 /**
  * Средняя
@@ -170,10 +171,8 @@ fun polynom(p: List<Double>, x: Double): Double = p.mapIndexed { element, i -> e
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Double>): MutableList<Double> {
-    var summOfPrevs = 0.0
-    for (i in 0 until list.size) {
-        summOfPrevs += list[i]
-        list[i] = summOfPrevs
+    for (i in 1 until list.size) {
+        list[i] += list[i - 1]
     }
     return list
 }
@@ -232,15 +231,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
-fun convertToString(n: Int, base: Int): String {
-    val convertedNum = convert(n, base)
-    var answer = ""
-    for (element in convertedNum) {
-        if (element < 10) answer += element
-        else answer += 'a' + (element - 10)
-    }
-    return answer
-}
+fun convertToString(n: Int, base: Int): String = convert(n, base).joinToString(separator = "")
+{ if (it < 10) "$it" else ('a' + it - 10).toString() }
 
 /**
  * Средняя
@@ -266,15 +258,12 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: str = "13c", base = 14 -> 250
  */
-fun decimalFromString(str: String, base: Int): Int {
-    val nums = str.map {
-        when {
-            it < 'a' -> it - '0'
-            else -> it - 'a' + 10
-        }
-    }
-    return decimal(nums, base)
+fun letterToNum(x: Char): Int = when {
+    x < 'a' -> x - '0'
+    else -> x - 'a' + 10
 }
+
+fun decimalFromString(str: String, base: Int): Int = decimal((str.map { letterToNum(it) }), base)
 
 /**
  * Сложная
@@ -286,27 +275,17 @@ fun decimalFromString(str: String, base: Int): Int {
  */
 fun roman(n: Int): String {
     var number = n
-    val numPairs = listOf(Pair(1000, 'M'), Pair(500, 'D'), Pair(100, 'C'), Pair(50, 'L'), Pair(10, 'X'),
-            Pair(5, 'V'), Pair(1, 'I'))
-    val answer = mutableListOf<Char>()
-    for ((index, pair) in numPairs.withIndex()) {
-        val counter = number / pair.first
-        if (counter < 4) {
-            for (i in 0 until counter)
-                answer.add(pair.second)
-        } else {
-            if (answer.isNotEmpty() && answer[answer.lastIndex] == numPairs[index - 1].second) {
-                answer[answer.lastIndex] = pair.second
-                answer.add(numPairs[index - 2].second)
-            } else {
-                answer.add(pair.second)
-                answer.add(numPairs[index - 1].second)
-            }
-        }
-        number %= pair.first
-        if (number == 0) break
+    val answer = StringBuilder()
+    val numPairs = listOf(Pair(1000, 'M'), Pair(900, "CM"), Pair(500, 'D'), Pair(400, "CD"), Pair(100, 'C'),
+            Pair(90, "XC"), Pair(50, 'L'), Pair(40, "XL"), Pair(10, 'X'), Pair(9, "IX"), Pair(5, 'V'), Pair(4, "IV"), Pair(1, 'I'))
+    var i = 0
+    while (number > 0) {
+        if (number >= numPairs[i].first) {
+            number -= numPairs[i].first
+            answer.append(numPairs[i].second)
+        } else i++
     }
-    return answer.joinToString(separator = "")
+    return "$answer"
 }
 
 /**
