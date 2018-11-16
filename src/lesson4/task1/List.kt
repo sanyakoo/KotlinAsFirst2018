@@ -231,8 +231,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
-fun convertToString(n: Int, base: Int): String = convert(n, base).joinToString(separator = "")
-{ if (it < 10) "$it" else ('a' + it - 10).toString() }
+fun convertToString(n: Int, base: Int): String =
+        convert(n, base).joinToString(separator = "") { if (it < 10) "$it" else ('a' + it - 10).toString() }
 
 /**
  * Средняя
@@ -259,7 +259,7 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Например: str = "13c", base = 14 -> 250
  */
 fun letterToNum(x: Char): Int = when {
-    x < 'a' -> x - '0'
+    x in '0'..'9' -> x - '0'
     else -> x - 'a' + 10
 }
 
