@@ -2,6 +2,9 @@
 
 package lesson5.task1
 
+
+import kotlin.math.max
+
 /**
  * Пример
  *
@@ -361,4 +364,37 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val n = treasures.size
+    val w = capacity
+    val A = Array(n + 1) { IntArray(w + 1) }
+    for (i in 0..w)
+        A[0][i] = 0
+    for (i in 0..n)
+        A[i][0] = 0
+    val treasuresNames = treasures.keys.toList()
+    for (k in 1..n) {
+        val weightAndValue = treasures[treasuresNames[k - 1]]
+        val weight = weightAndValue!!.first
+        val value = weightAndValue.second
+        for (curCapacity in 1..w) { //Перебираем для каждого k все вместимости
+            if (curCapacity >= weight) //Если текущий предмет вмещается в рюкзак
+                A[k][curCapacity] = max(A[k - 1][curCapacity], A[k - 1][curCapacity - weight] + value) //Выбираем класть его или нет
+            else
+                A[k][curCapacity] = A[k - 1][curCapacity] //Иначе, не кладем
+        }
+    }
+    val addedTreasures = mutableSetOf<String>()
+    var k = n
+    var s = capacity
+    while (k > 0) {
+        if (A[k - 1][s] == A[k][s]) k -= 1
+        else {
+            val t = treasuresNames[k - 1]
+            addedTreasures.add(t)
+            k -= 1
+            s -= treasures[t]!!.first
+        }
+    }
+    return addedTreasures
+}
