@@ -116,10 +116,10 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
     val result = mutableMapOf<Int, List<String>>()
     for ((student, grade) in grades) {
-        val studList = result[grade] ?: listOf()
-        result[grade] = (studList + student).sorted()
+        val studList = result[grade] ?: emptyList()
+        result[grade] = (studList + student).sortedDescending()
     }
-    return result.toSortedMap()
+    return result
 }
 
 /**
@@ -268,7 +268,8 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = chars.containsAll(word.toSet())
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+        chars.map { it.toLowerCase() }.containsAll(word.toLowerCase().toSet())
 
 /**
  * Средняя
