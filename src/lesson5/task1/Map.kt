@@ -103,6 +103,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     }
     return answer
 }
+
 /**
  * Простая
  *
@@ -211,6 +212,17 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
+fun addFriends(s: MutableSet<String>, f: String, friends: Map<String, Set<String>>) {
+    if (f in s) return
+    s.add(f)
+    val subFriends = friends[f]
+    if (subFriends != null) {
+        for (h in subFriends) {
+            addFriends(s, h, friends)
+        }
+    }
+}
+
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val allPeople = friends.keys.toMutableSet()
     for (value in friends.values) {
@@ -218,16 +230,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     }
     val result = mutableMapOf<String, Set<String>>()
     for (key in allPeople) {
-        val immFriends = friends[key]
-        if (immFriends != null) {
-            val s: MutableSet<String> = immFriends.toMutableSet()
-            for (f in immFriends) {
-                s.addAll(friends[f] ?: setOf())
-            }
-            result[key] = s - key
-        } else {
-            result[key] = setOf()
-        }
+        val s: MutableSet<String> = mutableSetOf()
+        addFriends(s, key, friends)
+        result[key] = s - key
     }
     return result
 }
@@ -310,6 +315,7 @@ fun hasAnagrams(words: List<String>): Boolean {
     }
     return false
 }
+
 /**
  * Сложная
  *
