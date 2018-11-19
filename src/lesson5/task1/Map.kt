@@ -313,12 +313,14 @@ fun hasAnagrams(words: List<String>): Boolean {
     for (i in 0 until words.size) {
         for (j in 0 until words.size) {
             if (j == i) continue
-            if (words[j].isNotEmpty() && canBuildFrom(words[i].toList(), words[j])) return true
+            if (words[j].isNotEmpty() && words[i].isNotEmpty() && words[j].toLowerCase().toSet() ==
+                    words[i].toLowerCase().toSet()) {
+                return true
+            }
         }
     }
     return false
 }
-
 /**
  * Сложная
  *
