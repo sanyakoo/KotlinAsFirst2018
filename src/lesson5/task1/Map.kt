@@ -100,8 +100,9 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
     val answer = mapA.toMutableMap()
     for ((name, phoneNumber) in mapB) {
-        if (mapA.containsKey(name) && mapA[name] != phoneNumber)
-            answer[name] = listOf(mapA[name], mapB[name]).joinToString()
+        val firstMapKey = mapA[name]
+        if (mapA.containsKey(name) && firstMapKey != phoneNumber)
+            answer[name] = listOf(firstMapKey, mapB[name]).joinToString()
         else answer[name] = phoneNumber
     }
     return answer
@@ -117,14 +118,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val result = mutableMapOf<Int, List<String>>()
-    for ((student, grade) in grades) {
-        val studList = result[grade] ?: emptyList()
-        result[grade] = (studList + student).sortedDescending()
-    }
-    return result
-}
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = grades.toList().groupBy({ it.second }, { it.first })
 
 /**
  * Простая
@@ -138,7 +132,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     for ((key, value) in a) {
-        if ((b[key] ?: emptyMap<String, String>()) != value) return false
+        if (b[key] != value) return false
     }
     return true
 }
@@ -153,14 +147,8 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val answer = mutableMapOf<String, List<Double>>()
-    for ((stock, price) in stockPrices) {
-        val studList = answer[stock] ?: listOf()
-        answer[stock] = studList + price
-    }
-    return answer.mapValues { it.value.average() }
-}
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
+        stockPrices.groupBy({ it.first }, { it.second }).mapValues { it.value.average() }
 
 /**
  * Средняя
