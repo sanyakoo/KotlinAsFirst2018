@@ -145,7 +145,7 @@ class Tests {
                 buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
         )
         assertEquals(
-                mapOf(3 to listOf("Семён", "Михаил", "Марат")),
+                mapOf(3 to listOf("Марат", "Семён", "Михаил")),
                 buildGrades(mapOf("Марат" to 3, "Семён" to 3, "Михаил" to 3))
         )
     }
@@ -308,6 +308,10 @@ class Tests {
                 Pair(-1, -1),
                 findSumOfTwo(listOf(1, 2, 3), 6)
         )
+        assertEquals(
+                Pair(3, 4),
+                findSumOfTwo(listOf(0, 2, 5, 4, 4, 7), 8)
+        )
     }
 
     @Test
@@ -328,6 +332,5 @@ class Tests {
                 )
         )
     }
-
     // TODO: map task tests
 }

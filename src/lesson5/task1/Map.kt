@@ -101,8 +101,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     val answer = mapA.toMutableMap()
     for ((name, phoneNumber) in mapB) {
         val firstMapKey = mapA[name]
-        if (mapA.containsKey(name) && firstMapKey != phoneNumber)
-            answer[name] = listOf(firstMapKey, mapB[name]).joinToString()
+        if (firstMapKey != null && firstMapKey != phoneNumber)
+            answer[name] = "$firstMapKey, ${mapB[name]}"
         else answer[name] = phoneNumber
     }
     return answer
@@ -204,8 +204,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *        )
  */
 fun addFriends(s: MutableSet<String>, f: String, friends: Map<String, Set<String>>) {
-    if (f in s) return
-    s.add(f)
+    if (!s.add(f)) return
     val subFriends = friends[f]
     if (subFriends != null) {
         for (h in subFriends) {
@@ -223,7 +222,8 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     for (key in allPeople) {
         val s: MutableSet<String> = mutableSetOf()
         addFriends(s, key, friends)
-        result[key] = s - key
+        s.remove(key)
+        result[key] = s
     }
     return result
 }
@@ -253,7 +253,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
  *
  * Для двух списков людей найти людей, встречающихся в обоих списках
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().intersect(b.toSet()).toList()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.intersect(b).toList()
 
 /**
  * Средняя
@@ -265,7 +265,7 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-        chars.map { it.toLowerCase() }.containsAll(word.toLowerCase().toSet())
+        chars.map { it.toLowerCase() }.toSet().containsAll(word.toLowerCase().toList())
 
 /**
  * Средняя
@@ -282,8 +282,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean =
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     for (el in list) {
-        val temp = result[el] ?: 0
-        result[el] = temp + 1
+        result[el] = (result[el] ?: 0) + 1
     }
     return result.filter { it.value > 1 }
 }
@@ -298,10 +297,17 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    val wordsNew = words.map { it.toSet() }
-    for (i in 0 until wordsNew.size - 1) {
-        for (j in i + 1 until wordsNew.size) {
-            if (wordsNew[i] == wordsNew[j])
+    val wordsMaps = mutableListOf<Map<Char, Int>>()
+    for (word in words) {
+        val lettersMap = mutableMapOf<Char, Int>()
+        for (c in word) {
+            lettersMap[c] = (lettersMap[c] ?: 0) + 1
+        }
+        wordsMaps += lettersMap
+    }
+    for (i in 0 until wordsMaps.size - 1) {
+        for (j in i + 1 until wordsMaps.size) {
+            if (wordsMaps[i] == wordsMaps[j])
                 return true
         }
     }
@@ -326,9 +332,23 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (i in 0 until list.size - 1) {
-        for (j in i + 1 until list.size) {
-            if (list[i] + list[j] == number) return Pair(i, j)
+    val digitToIndexes = mutableMapOf<Int, List<Int>>()
+    for (i in 0 until list.size) {
+        val digit = list[i]
+        if (digit <= number) {
+            val indexes: MutableList<Int> = digitToIndexes[digit] as MutableList<Int>? ?: mutableListOf()
+            indexes += i
+            digitToIndexes[digit] = indexes
+        }
+    }
+
+    for ((digit, indexes) in digitToIndexes) {
+        val complementDigit = number - digit
+        if (complementDigit != digit) {
+            val complementIndexes = digitToIndexes[complementDigit]
+            if (complementIndexes != null) return Pair(indexes.first(), complementIndexes.last())
+        } else if (indexes.size > 1) {
+            return Pair(indexes.first(), indexes.last())
         }
     }
     return Pair(-1, -1)
@@ -362,9 +382,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         a[i][0] = 0
     val treasuresNames = treasures.keys.toList()
     for (k in 1..n) {
-        val weightAndValue = treasures[treasuresNames[k - 1]]
-        val weight = weightAndValue!!.first
-        val value = weightAndValue.second
+        val (weight, value) = treasures[treasuresNames[k - 1]]!!
         for (curCapacity in 1..capacity) {
             if (curCapacity >= weight)
                 a[k][curCapacity] = max(a[k - 1][curCapacity], a[k - 1][curCapacity - weight] + value)
