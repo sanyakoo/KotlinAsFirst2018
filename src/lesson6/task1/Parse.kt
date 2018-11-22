@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import java.time.DateTimeException
+import java.time.LocalDate
+
 /**
  * Пример
  *
@@ -71,7 +74,33 @@ fun main(args: Array<String>) {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    if (parts.size != 3) return ""
+    val day = parts[0].toInt()
+    val month = when (parts[1]) {
+        "января" -> 0
+        "февраля" -> 1
+        "марта" -> 2
+        "апреля" -> 3
+        "мая" -> 4
+        "июня" -> 5
+        "июля" -> 6
+        "августа" -> 7
+        "сентября" -> 8
+        "октября" -> 9
+        "ноября" -> 10
+        "декабря" -> 11
+        else -> -1
+    }
+    val year = parts[2].toInt()
+    try {
+        val date = LocalDate.of(year, month + 1, day)
+    } catch (e: DateTimeException) {
+        return ""
+    }
+    return String.format("%02d.%02d.%d", day, month + 1, year)
+}
 
 /**
  * Средняя
@@ -83,7 +112,30 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = if (digital.matches(Regex("""\d{2}\.\d{2}\.\d+"""))) digital.split(".") else return ""
+    val day = parts[0].toInt()
+    if (parts[1].toInt() !in 1..12) return ""
+    val month = when (parts[1]) {
+        "01" -> "января"
+        "02" -> "февраля"
+        "03" -> "марта"
+        "04" -> "апреля"
+        "05" -> "мая"
+        "06" -> "июня"
+        "07" -> "июля"
+        "08" -> "августа"
+        "09" -> "сентября"
+        "101" -> "октября"
+        "11" -> "ноября"
+        "12" -> "декабря"
+        else -> ""
+    }
+    val year = parts[2].toInt()
+    return if (day in 1..31) {
+        String.format("%d %s %d", day, month, year)
+    } else ""
+}
 
 /**
  * Средняя
