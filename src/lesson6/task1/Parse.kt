@@ -113,26 +113,32 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     val parts = if (digital.matches(Regex("""\d{2}\.\d{2}\.\d+"""))) digital.split(".") else return ""
     val day = parts[0].toInt()
-    if (parts[1].toInt() !in 1..12) return ""
-    val month = when (parts[1]) {
-        "01" -> "января"
-        "02" -> "февраля"
-        "03" -> "марта"
-        "04" -> "апреля"
-        "05" -> "мая"
-        "06" -> "июня"
-        "07" -> "июля"
-        "08" -> "августа"
-        "09" -> "сентября"
-        "101" -> "октября"
-        "11" -> "ноября"
-        "12" -> "декабря"
+    val monthInt = parts[1].toInt()
+    if (monthInt !in 1..12) return ""
+    val month = when (monthInt) {
+        1 -> "января"
+        2 -> "февраля"
+        3 -> "марта"
+        4 -> "апреля"
+        5 -> "мая"
+        6 -> "июня"
+        7 -> "июля"
+        8 -> "августа"
+        9 -> "сентября"
+        10 -> "октября"
+        11 -> "ноября"
+        12 -> "декабря"
         else -> ""
     }
     val year = parts[2].toInt()
-    return if (day in 1..31) {
-        String.format("%d %s %d", day, month, year)
-    } else ""
+
+    try {
+        LocalDate.of(year, monthInt, day)
+    } catch (e: DateTimeException) {
+        return ""
+    }
+
+    return String.format("%d %s %d", day, month, year)
 }
 
 /**
@@ -147,7 +153,13 @@ fun dateDigitToStr(digital: String): String {
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val regex = Regex("""(\+\d+)?\s*(\((\d+)\))?\s*\d(([\s-]*)\d+)*""")
+//    val matchRes = regex.find(phone) ?: return ""
+    if (!phone.matches(regex)) return ""
+    val filtered = phone.replace("""[\s-\(\)]""".toRegex(), "")
+    return filtered
+}
 
 /**
  * Средняя

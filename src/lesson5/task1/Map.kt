@@ -332,24 +332,23 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    val digitToIndexes = mutableMapOf<Int, List<Int>>()
+    val digitToIndexes = mutableMapOf<Int, MutableList<Int>>()
     for (i in 0 until list.size) {
         val digit = list[i]
         if (digit <= number) {
-            val indexes: MutableList<Int> = digitToIndexes[digit] as MutableList<Int>? ?: mutableListOf()
+            val indexes: MutableList<Int> = digitToIndexes[digit] ?: mutableListOf()
             indexes += i
             digitToIndexes[digit] = indexes
-        }
-    }
 
-    for ((digit, indexes) in digitToIndexes) {
-        val complementDigit = number - digit
-        if (complementDigit != digit) {
-            val complementIndexes = digitToIndexes[complementDigit]
-            if (complementIndexes != null) return Pair(indexes.first(), complementIndexes.last())
-        } else if (indexes.size > 1) {
-            return Pair(indexes.first(), indexes.last())
+            val complementDigit = number - digit
+            if (complementDigit != digit) {
+                val complementIndexes = digitToIndexes[complementDigit]
+                if (complementIndexes != null) return Pair(complementIndexes.last(), i)
+            } else if (indexes.size > 1) {
+                return Pair(indexes.first(), i)
+            }
         }
+
     }
     return Pair(-1, -1)
 }
@@ -376,10 +375,6 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val n = treasures.size
     val a = Array(n + 1) { IntArray(capacity + 1) }
-    for (i in 0..capacity)
-        a[0][i] = 0
-    for (i in 0..n)
-        a[i][0] = 0
     val treasuresNames = treasures.keys.toList()
     for (k in 1..n) {
         val (weight, value) = treasures[treasuresNames[k - 1]]!!
