@@ -355,7 +355,7 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    if (!commands.matches("""[ \[\]+\-<>]+""".toRegex())) throw IllegalArgumentException("illegal characters in commands")
+    if (!commands.matches("""[ \[\]+\-<>]+""".toRegex()) && commands != "") throw IllegalArgumentException("illegal characters in commands")
 
     var curPos = cells / 2
     val answer = Array(cells) { 0 }
