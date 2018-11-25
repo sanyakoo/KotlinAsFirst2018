@@ -2,7 +2,6 @@
 
 package lesson6.task1
 
-import java.time.DateTimeException
 import java.time.LocalDate
 
 /**
