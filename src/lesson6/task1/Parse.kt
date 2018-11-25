@@ -376,9 +376,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     }
 
 
-    var count = 0
-    while (processedCommands < limit && count < commands.length) {
-        val currentCommand = commands[count]
+    var counter = 0
+    while (processedCommands < limit && counter < commands.length) {
+        val currentCommand = commands[counter]
         when (currentCommand) {
             ' ' -> {
             }
@@ -390,9 +390,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (answer[curPos] == 0) {
                     var passCond = 1
                     while (passCond > 0) {
-                        count++
-                        if (commands[count] == '[') passCond++
-                        else if (commands[count] == ']') passCond--
+                        counter++
+                        if (commands[counter] == '[') passCond++
+                        else if (commands[counter] == ']') passCond--
                     }
                 }
             }
@@ -400,15 +400,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (answer[curPos] != 0) {
                     var passFactor = 1
                     while (passFactor > 0) {
-                        count--
-                        if (commands[count] == ']') passFactor++
-                        else if (commands[count] == '[') passFactor--
+                        counter--
+                        if (commands[counter] == ']') passFactor++
+                        else if (commands[counter] == '[') passFactor--
                     }
                 }
             }
             else -> throw IllegalArgumentException()
         }
-        count++
+        counter++
         processedCommands++
         if (curPos < 0 || curPos >= answer.size) throw IllegalStateException()
     }
