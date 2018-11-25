@@ -93,7 +93,7 @@ fun dateStrToDigit(str: String): String {
     }
     val year = parts[2].toInt()
     try {
-        val date = LocalDate.of(year, month + 1, day)
+        LocalDate.of(year, month + 1, day)
     } catch (e: DateTimeException) {
         return ""
     }
@@ -157,7 +157,7 @@ fun flattenPhoneNumber(phone: String): String {
     val regex = Regex("""(\+\d+)?\s*(\((\d+)\))?\s*\d(([\s-]*)\d+)*""")
 //    val matchRes = regex.find(phone) ?: return ""
     if (!phone.matches(regex)) return ""
-    val filtered = phone.replace("""[\s-\(\)]""".toRegex(), "")
+    val filtered = phone.replace("""[\s-()]""".toRegex(), "")
     return filtered
 }
 
@@ -171,7 +171,21 @@ fun flattenPhoneNumber(phone: String): String {
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val parts = if (jumps.matches(Regex("""[\d\s\-%]+"""))) jumps.split(Regex("""[\D]+"""))
+    else return -1
+    var answer = -1
+    for (part in parts) {
+        try {
+            if (part.toInt() >= answer) {
+                answer = part.toInt()
+            }
+        } catch (e: NumberFormatException) {
+            continue
+        }
+    }
+    return answer
+}
 
 /**
  * Сложная
@@ -183,7 +197,21 @@ fun bestLongJump(jumps: String): Int = TODO()
  * Прочитать строку и вернуть максимальную взятую высоту (230 в примере).
  * При нарушении формата входной строки вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    if (jumps.matches(Regex("""[\d\s+%\-]+"""))) {
+        val parts = jumps.split(Regex("""[\s%\-]+"""))
+        val answer = mutableListOf<Int>()
+        for (i in 0 until parts.size) {
+            try {
+                val partsInInt = parts[i].toInt()
+                if (parts[i + 1] == "+") answer.add(partsInInt)
+            } catch (e: NumberFormatException) {
+                continue
+            }
+        }
+        return answer.max() ?: -1
+    } else return -1
+}
 
 /**
  * Сложная
@@ -194,7 +222,24 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    if (expression.matches(Regex("\\d+"))) return expression.toInt()
+    if (!(expression.matches(Regex("^\\d+(\\s[+-]\\s)(\\d+\\s[+-]\\s)*\\d+$")))) throw IllegalArgumentException()
+    val digitsAndSymbols = expression.split(" ")
+    val digits = digitsAndSymbols.filterIndexed { i, _ -> i % 2 == 0 }
+    val symbols = listOf("+").plus(digitsAndSymbols.filterIndexed { i, _ -> i % 2 != 0 })
+    var i = 0
+    var answer = 0
+    for (digit in digits) {
+        when {
+            symbols[i] == "+" -> answer += digit.toInt()
+            symbols[i] == "-" -> answer -= digit.toInt()
+            else -> throw IllegalArgumentException()
+        }
+        i++
+    }
+    return answer
+}
 
 /**
  * Сложная
@@ -205,7 +250,16 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val parts = str.toLowerCase().split(" ")
+    var answer = 0
+    for (i in 0 until parts.size - 1) {
+        if (parts[i] == parts[i + 1]) return answer
+        answer += parts[i].length + 1
+
+    }
+    return -1
+}
 
 /**
  * Сложная
@@ -218,7 +272,26 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    var answer = ""
+    val split = description.split("; ", " ")
+    var max = 0.0
+    try {
+        for (i in 1 until split.size step 2) {
+            val next = split[i].toDouble()
+            if (next < 0)
+                return ""
+            else
+                if (next >= max) {
+                    max = next
+                    answer = split[i - 1]
+                }
+        }
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+    return answer
+}
 
 /**
  * Сложная
