@@ -53,6 +53,7 @@ class Tests {
         assertEquals("", dateDigitToStr("ab.cd.ef"))
         assertEquals("", dateStrToDigit("32.09.2011"))
         assertEquals("", dateStrToDigit("29.02.1993"))
+        assertEquals("", dateStrToDigit("b`\\\"X oUb\\\"_y}KBI\\tpc5[K\\nI[12 rIvFF{bFw)<sIjm:'{,)7wBMKi}N2\\nW';(4XtWEPU+cv\\\\g:"))
     }
 
     @Test
