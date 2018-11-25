@@ -74,30 +74,30 @@ fun main(args: Array<String>) {
  */
 fun dateStrToDigit(str: String): String {
     val parts = str.split(" ")
-    if (parts.size != 3) return ""
-    val day = parts[0].toInt()
-    val month = when (parts[1]) {
-        "января" -> 0
-        "февраля" -> 1
-        "марта" -> 2
-        "апреля" -> 3
-        "мая" -> 4
-        "июня" -> 5
-        "июля" -> 6
-        "августа" -> 7
-        "сентября" -> 8
-        "октября" -> 9
-        "ноября" -> 10
-        "декабря" -> 11
-        else -> -1
-    }
-    val year = parts[2].toInt()
     try {
+        if (parts.size != 3) return ""
+        val day = parts[0].toInt()
+        val month = when (parts[1]) {
+            "января" -> 0
+            "февраля" -> 1
+            "марта" -> 2
+            "апреля" -> 3
+            "мая" -> 4
+            "июня" -> 5
+            "июля" -> 6
+            "августа" -> 7
+            "сентября" -> 8
+            "октября" -> 9
+            "ноября" -> 10
+            "декабря" -> 11
+            else -> -1
+        }
+        val year = parts[2].toInt()
         LocalDate.of(year, month + 1, day)
-    } catch (e: DateTimeException) {
+        return String.format("%02d.%02d.%d", day, month + 1, year)
+    } catch (e: Exception) {
         return ""
     }
-    return String.format("%02d.%02d.%d", day, month + 1, year)
 }
 
 /**
@@ -111,34 +111,33 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val parts = if (digital.matches(Regex("""\d{2}\.\d{2}\.\d+"""))) digital.split(".") else return ""
-    val day = parts[0].toInt()
-    val monthInt = parts[1].toInt()
-    if (monthInt !in 1..12) return ""
-    val month = when (monthInt) {
-        1 -> "января"
-        2 -> "февраля"
-        3 -> "марта"
-        4 -> "апреля"
-        5 -> "мая"
-        6 -> "июня"
-        7 -> "июля"
-        8 -> "августа"
-        9 -> "сентября"
-        10 -> "октября"
-        11 -> "ноября"
-        12 -> "декабря"
-        else -> ""
-    }
-    val year = parts[2].toInt()
-
+    if (!digital.matches(Regex("""\d{2}\.\d{2}\.\d+"""))) return ""
     try {
+        val parts = digital.split(".")
+        val day = parts[0].toInt()
+        val monthInt = parts[1].toInt()
+        val month = when (monthInt) {
+            1 -> "января"
+            2 -> "февраля"
+            3 -> "марта"
+            4 -> "апреля"
+            5 -> "мая"
+            6 -> "июня"
+            7 -> "июля"
+            8 -> "августа"
+            9 -> "сентября"
+            10 -> "октября"
+            11 -> "ноября"
+            12 -> "декабря"
+            else -> return ""
+        }
+        val year = parts[2].toInt()
+
         LocalDate.of(year, monthInt, day)
-    } catch (e: DateTimeException) {
+        return String.format("%d %s %d", day, month, year)
+    } catch (e: Exception) {
         return ""
     }
-
-    return String.format("%d %s %d", day, month, year)
 }
 
 /**
@@ -228,15 +227,13 @@ fun plusMinus(expression: String): Int {
     val digitsAndSymbols = expression.split(" ")
     val digits = digitsAndSymbols.filterIndexed { i, _ -> i % 2 == 0 }
     val symbols = listOf("+").plus(digitsAndSymbols.filterIndexed { i, _ -> i % 2 != 0 })
-    var i = 0
     var answer = 0
-    for (digit in digits) {
-        when {
-            symbols[i] == "+" -> answer += digit.toInt()
-            symbols[i] == "-" -> answer -= digit.toInt()
+    for ((i, digit) in digits.withIndex()) {
+        when (symbols[i]) {
+            "+" -> answer += digit.toInt()
+            "-" -> answer -= digit.toInt()
             else -> throw IllegalArgumentException()
         }
-        i++
     }
     return answer
 }
@@ -304,7 +301,23 @@ fun mostExpensive(description: String): String {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    if (!roman.matches("""[MDCLXVI]+""".toRegex())) return -1
+    val romanValues = mapOf('M' to 1000, 'D' to 500, 'C' to 100, 'L' to 50, 'X' to 10, 'V' to 5, 'I' to 1)
+
+    var res = 0
+    for (i in 0 until roman.length - 1) {
+        val nextValue = romanValues[roman[i + 1]]!!
+        val curValue = romanValues[roman[i]]!!
+        if (curValue < nextValue) {
+            res -= curValue
+        } else {
+            res += curValue
+        }
+    }
+    res += romanValues[roman.last()]!!
+    return res
+}
 
 /**
  * Очень сложная
