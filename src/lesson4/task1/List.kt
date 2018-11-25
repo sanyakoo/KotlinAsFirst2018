@@ -5,7 +5,7 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
 import java.lang.Math.*
-import lesson3.task1.isPrime
+
 /**
  * Пример
  *
@@ -123,7 +123,7 @@ fun abs(v: List<Double>): Double = sqrt(v.map { it * it }.sum())
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size.toDouble()
+fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() / list.size
 
 /**
  * Средняя
@@ -134,7 +134,7 @@ fun mean(list: List<Double>): Double = if (list.isEmpty()) 0.0 else list.sum() /
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
-    var avgValue = mean(list)
+    val avgValue = mean(list)
     for (i in 0 until list.size) {
         list[i] -= avgValue
     }
@@ -148,13 +148,7 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.0.
  */
-fun times(a: List<Double>, b: List<Double>): Double {
-    var answer = 0.0
-    for (i in 0 until a.size) {
-        answer += a[i] * b[i]
-    }
-    return answer
-}
+fun times(a: List<Double>, b: List<Double>): Double = a.mapIndexed { i, n -> a[i] * b[i] }.sum()
 
 /**
  * Средняя
@@ -164,13 +158,7 @@ fun times(a: List<Double>, b: List<Double>): Double {
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0.0 при любом x.
  */
-fun polynom(p: List<Double>, x: Double): Double {
-    var answer = 0.0
-    for (i in 0 until p.size) {
-        answer += p[i] * pow(x, i.toDouble())
-    }
-    return answer
-}
+fun polynom(p: List<Double>, x: Double): Double = p.mapIndexed { i, element -> element * pow(x, i.toDouble()) }.sum()
 
 /**
  * Средняя
@@ -183,10 +171,8 @@ fun polynom(p: List<Double>, x: Double): Double {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Double>): MutableList<Double> {
-    var summOfPrevs = 0.0
-    for (i in 0 until list.size) {
-        summOfPrevs += list[i]
-        list[i] = summOfPrevs
+    for (i in 1 until list.size) {
+        list[i] += list[i - 1]
     }
     return list
 }
@@ -230,10 +216,10 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     var number = n
     var list = listOf<Int>()
-    while (number > 0) {
+    do {
         list += number % base
         number /= base
-    }
+    } while (number > 0)
     return list.reversed()
 }
 
@@ -245,7 +231,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String =
+        convert(n, base).joinToString(separator = "") { if (it < 10) "$it" else ('a' + it - 10).toString() }
 
 /**
  * Средняя
@@ -271,7 +258,12 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: str = "13c", base = 14 -> 250
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun letterToNum(x: Char): Int = when {
+    x in '0'..'9' -> x - '0'
+    else -> x - 'a' + 10
+}
+
+fun decimalFromString(str: String, base: Int): Int = decimal((str.map { letterToNum(it) }), base)
 
 /**
  * Сложная
@@ -281,7 +273,21 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var number = n
+    val answer = StringBuilder()
+    val numPairs = listOf(Pair(1000, 'M'), Pair(900, "CM"), Pair(500, 'D'), Pair(400, "CD"), Pair(100, 'C'),
+            Pair(90, "XC"), Pair(50, 'L'), Pair(40, "XL"), Pair(10, 'X'), Pair(9, "IX"), Pair(5, 'V'), Pair(4, "IV"),
+            Pair(1, 'I'))
+    var i = 0
+    while (number > 0) {
+        if (number >= numPairs[i].first) {
+            number -= numPairs[i].first
+            answer.append(numPairs[i].second)
+        } else i++
+    }
+    return "$answer"
+}
 
 /**
  * Очень сложная
