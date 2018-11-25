@@ -51,9 +51,9 @@ class Tests {
         assertEquals("", dateDigitToStr("28.00.2000"))
         assertEquals("3 апреля 2011", dateDigitToStr("03.04.2011"))
         assertEquals("", dateDigitToStr("ab.cd.ef"))
-        assertEquals("", dateStrToDigit("32.09.2011"))
-        assertEquals("", dateStrToDigit("29.02.1993"))
-        assertEquals("", dateStrToDigit("b`\\\"X oUb\\\"_y}KBI\\tpc5[K\\nI[12 rIvFF{bFw)<sIjm:'{,)7wBMKi}N2\\nW';(4XtWEPU+cv\\\\g:"))
+        assertEquals("", dateDigitToStr("32.09.2011"))
+        assertEquals("", dateDigitToStr("29.02.1993"))
+        assertEquals("", dateDigitToStr("b`\\\"X oUb\\\"_y}KBI\\tpc5[K\\nI[12 rIvFF{bFw)<sIjm:'{,)7wBMKi}N2\\nW';(4XtWEPU+cv\\\\g:"))
     }
 
     @Test
