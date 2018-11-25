@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import java.time.LocalDate
+import java.util.*
 
 /**
  * Пример
@@ -354,4 +355,62 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (!commands.matches("""[ \[\]+\-<>]+""".toRegex())) throw IllegalArgumentException("illegal characters in commands")
+
+    var curPos = cells / 2
+    val answer = Array(cells) { 0 }
+    var processedCommands = 0
+
+
+    val dequeBrackets: Deque<Char> = LinkedList()
+    try {
+        commands.forEach {
+            if (it == '[') dequeBrackets.push('[')
+            else if (it == ']') dequeBrackets.pop()
+        }
+        if (dequeBrackets.isNotEmpty())
+            throw IllegalArgumentException("not all square brackets [ ] have pair")
+    } catch (e: Exception) {
+        throw IllegalArgumentException(e)
+    }
+
+
+    var count = 0
+    while (processedCommands < limit && count < commands.length) {
+        val currentCommand = commands[count]
+        when (currentCommand) {
+            ' ' -> {
+            }
+            '<' -> curPos--
+            '>' -> curPos++
+            '-' -> answer[curPos]--
+            '+' -> answer[curPos]++
+            '[' -> {
+                if (answer[curPos] == 0) {
+                    var passCond = 1
+                    while (passCond > 0) {
+                        count++
+                        if (commands[count] == '[') passCond++
+                        else if (commands[count] == ']') passCond--
+                    }
+                }
+            }
+            ']' -> {
+                if (answer[curPos] != 0) {
+                    var passFactor = 1
+                    while (passFactor > 0) {
+                        count--
+                        if (commands[count] == ']') passFactor++
+                        else if (commands[count] == '[') passFactor--
+                    }
+                }
+            }
+            else -> throw IllegalArgumentException()
+        }
+        count++
+        processedCommands++
+        if (curPos < 0 || curPos >= answer.size) throw IllegalStateException()
+    }
+    return answer.toList()
+}
