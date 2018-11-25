@@ -296,26 +296,8 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun wordToMap(word: String): MutableMap<Char, Int> {
-    val lettersMap = mutableMapOf<Char, Int>()
-    for (c in word) {
-        lettersMap[c] = (lettersMap[c] ?: 0) + 1
-    }
-    return lettersMap
-}
-
-fun hasAnagrams(words: List<String>): Boolean {
-    val wordsMaps = mutableMapOf<Int, Map<Char, Int>>()
-
-    for (i in 0 until words.size - 1) {
-        for (j in i + 1 until words.size) {
-            if (wordsMaps[i] ?: wordToMap(words[i]) == wordsMaps[j] ?: wordToMap(words[j]))
-                return true
-        }
-    }
-    return false
-}
-
+fun hasAnagrams(words: List<String>): Boolean =
+        words.groupingBy { it.toList().sorted() }.eachCount().any { (it.value) >= 2 }
 /**
  * Сложная
  *
@@ -334,23 +316,11 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    val digitToIndexes = mutableMapOf<Int, MutableList<Int>>()
+    val map = mutableMapOf<Int, Int>()
     for (i in 0 until list.size) {
-        val digit = list[i]
-        if (digit <= number) {
-            val indexes: MutableList<Int> = digitToIndexes[digit] ?: mutableListOf()
-            indexes += i
-            digitToIndexes[digit] = indexes
-
-            val complementDigit = number - digit
-            if (complementDigit != digit) {
-                val complementIndexes = digitToIndexes[complementDigit]
-                if (complementIndexes != null) return Pair(complementIndexes.last(), i)
-            } else if (indexes.size > 1) {
-                return Pair(indexes.first(), i)
-            }
-        }
-
+        val complementNum = map[number - list[i]]
+        if (complementNum != null) return complementNum to i
+        else map += list[i] to i
     }
     return Pair(-1, -1)
 }
