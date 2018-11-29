@@ -3,7 +3,6 @@
 package lesson6.task1
 
 import java.time.LocalDate
-import java.util.*
 
 /**
  * Пример
@@ -72,26 +71,15 @@ fun main(args: Array<String>) {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
+val months = listOf("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+val monthsMap = months.mapIndexed { index, s -> s to index }.toMap()
+
 fun dateStrToDigit(str: String): String {
-    val parts = str.split(" ")
+    val parts = str.split("\\s+".toRegex())
     try {
         if (parts.size != 3) return ""
         val day = parts[0].toInt()
-        val month = when (parts[1]) {
-            "января" -> 0
-            "февраля" -> 1
-            "марта" -> 2
-            "апреля" -> 3
-            "мая" -> 4
-            "июня" -> 5
-            "июля" -> 6
-            "августа" -> 7
-            "сентября" -> 8
-            "октября" -> 9
-            "ноября" -> 10
-            "декабря" -> 11
-            else -> -1
-        }
+        val month = monthsMap[parts[1]] ?: return ""
         val year = parts[2].toInt()
         LocalDate.of(year, month + 1, day)
         return String.format("%02d.%02d.%d", day, month + 1, year)
@@ -111,28 +99,12 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    if (!digital.matches(Regex("""\d{2}\.\d{2}\.\d+"""))) return ""
+    val found = Regex("""^(\d{2})\.(\d{2})\.(\d+)$""").find(digital) ?: return ""
     try {
-        val parts = digital.split(".")
-        val day = parts[0].toInt()
-        val monthInt = parts[1].toInt()
-        val month = when (monthInt) {
-            1 -> "января"
-            2 -> "февраля"
-            3 -> "марта"
-            4 -> "апреля"
-            5 -> "мая"
-            6 -> "июня"
-            7 -> "июля"
-            8 -> "августа"
-            9 -> "сентября"
-            10 -> "октября"
-            11 -> "ноября"
-            12 -> "декабря"
-            else -> return ""
-        }
-        val year = parts[2].toInt()
-
+        val day = found.groupValues[1].toInt()
+        val monthInt = found.groupValues[2].toInt()
+        val month = months[monthInt - 1]
+        val year = found.groupValues[3].toInt()
         LocalDate.of(year, monthInt, day)
         return String.format("%d %s %d", day, month, year)
     } catch (e: Exception) {
@@ -153,10 +125,9 @@ fun dateDigitToStr(digital: String): String {
  * При неверном формате вернуть пустую строку
  */
 fun flattenPhoneNumber(phone: String): String {
-    val regex = Regex("""(\+\d+)?\s*(\((\d+)\))?\s*\d(([\s-]*)\d+)*""")
-    if (!phone.matches(regex)) return ""
-    val filtered = phone.replace("""[\s-()]""".toRegex(), "")
-    return filtered
+    val phoneNew = phone.filter { it != ' ' && it != '-' }
+    if (!phoneNew.matches(Regex("""(\+\d+)?(\(\d+\))?(\d+)"""))) return ""
+    return phoneNew.replace("""[()]""".toRegex(), "")
 }
 
 /**
@@ -170,16 +141,13 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    val parts = if (jumps.matches(Regex("""[\d\s\-%]+"""))) jumps.split(Regex("""[\D]+"""))
-    else return -1
+    val jumpsNew = "$jumps "
+    if (!jumpsNew.matches(Regex("""((\d+|-|%) +)*"""))) return -1
+    val parts = jumpsNew.split(Regex("""[\D]+""")).filter { it.isNotEmpty() }.map { it.toInt() }
     var answer = -1
     for (part in parts) {
-        try {
-            if (part.toInt() >= answer) {
-                answer = part.toInt()
-            }
-        } catch (e: NumberFormatException) {
-            continue
+        if (part >= answer) {
+            answer = part
         }
     }
     return answer
@@ -196,19 +164,24 @@ fun bestLongJump(jumps: String): Int {
  * При нарушении формата входной строки вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    if (jumps.matches(Regex("""[\d\s+%\-]+"""))) {
-        val parts = jumps.split(Regex("""[\s%\-]+"""))
-        val answer = mutableListOf<Int>()
-        for (i in 0 until parts.size) {
-            try {
-                val partsInInt = parts[i].toInt()
-                if (parts[i + 1] == "+") answer.add(partsInInt)
-            } catch (e: NumberFormatException) {
-                continue
+    val jumpsNew = "$jumps "
+    val matchResult = Regex("""^(\d+ [+%\-]+ )*$""").find(jumpsNew) ?: return -1
+    val parts = jumpsNew.split(Regex("""[\s%\-]+"""))
+    var answer = -1
+    var i = 0
+    while (i < parts.size) {
+        try {
+            val partsInInt = parts[i++].toInt()
+            if (parts[i] == "+") {
+                answer = maxOf(partsInInt, answer)
+                ++i
             }
+        } catch (e: NumberFormatException) {
+            continue
         }
-        return answer.max() ?: -1
-    } else return -1
+
+    }
+    return answer
 }
 
 /**
@@ -222,15 +195,14 @@ fun bestHighJump(jumps: String): Int {
  */
 fun plusMinus(expression: String): Int {
     if (expression.matches(Regex("\\d+"))) return expression.toInt()
-    if (!(expression.matches(Regex("^\\d+(\\s[+-]\\s)(\\d+\\s[+-]\\s)*\\d+$")))) throw IllegalArgumentException()
+    if (!(expression.matches(Regex("""^(\d+\s+[+-]\s+)*\d+$""")))) throw IllegalArgumentException()
     val digitsAndSymbols = expression.split(" ")
-    val digits = digitsAndSymbols.filterIndexed { i, _ -> i % 2 == 0 }
-    val symbols = listOf("+").plus(digitsAndSymbols.filterIndexed { i, _ -> i % 2 != 0 })
-    var answer = 0
-    for ((i, digit) in digits.withIndex()) {
-        when (symbols[i]) {
-            "+" -> answer += digit.toInt()
-            "-" -> answer -= digit.toInt()
+    val (digits, symbols) = digitsAndSymbols.withIndex().partition { (i, _) -> i % 2 == 0 }
+    var answer = digits.first().value.toInt()
+    for ((i, symbol) in symbols.withIndex()) {
+        when (symbol.value) {
+            "+" -> answer += digits[i + 1].value.toInt()
+            "-" -> answer -= digits[i + 1].value.toInt()
             else -> throw IllegalArgumentException()
         }
     }
@@ -248,11 +220,11 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     val parts = str.toLowerCase().split(" ")
+    val zippedWithNext = parts.zipWithNext()
     var answer = 0
-    for (i in 0 until parts.size - 1) {
-        if (parts[i] == parts[i + 1]) return answer
-        answer += parts[i].length + 1
-
+    for ((w1, w2) in zippedWithNext) {
+        if (w1 == w2) return answer
+        answer += w1.length + 1
     }
     return -1
 }
@@ -270,18 +242,21 @@ fun firstDuplicateIndex(str: String): Int {
  */
 fun mostExpensive(description: String): String {
     var answer = ""
-    val split = description.split("; ", " ")
+    val splited = description.split("; ")
     var max = 0.0
     try {
-        for (i in 1 until split.size step 2) {
-            val next = split[i].toDouble()
+        for (goodAndPrice in splited) {
+            val split = goodAndPrice.split(" ")
+            if (split.size < 2) return ""
+            val next = split[1].toDouble()
             if (next < 0)
                 return ""
             else
                 if (next >= max) {
                     max = next
-                    answer = split[i - 1]
+                    answer = split[0]
                 }
+
         }
     } catch (e: NumberFormatException) {
         return ""
@@ -355,29 +330,30 @@ fun fromRoman(roman: String): Int {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    if (!commands.matches("""[ \[\]+\-<>]+""".toRegex()) && commands != "") throw IllegalArgumentException("illegal characters in commands")
+    if (!commands.matches("""[ \[\]+\-<>]*""".toRegex())) throw IllegalArgumentException("illegal characters in commands")
 
     var curPos = cells / 2
     val answer = Array(cells) { 0 }
     var processedCommands = 0
 
 
-    val dequeBrackets: Deque<Char> = LinkedList()
-    try {
-        commands.forEach {
-            if (it == '[') dequeBrackets.push('[')
-            else if (it == ']') dequeBrackets.pop()
+    var dequeBrackets = 0
+    commands.forEach {
+        if (it == '[') dequeBrackets++
+        else if (it == ']') {
+            dequeBrackets--
+            if (dequeBrackets < 0)
+                throw IllegalArgumentException("not all square brackets [ ] have pair") // лишняя ]
+
         }
-        if (dequeBrackets.isNotEmpty())
-            throw IllegalArgumentException("not all square brackets [ ] have pair")
-    } catch (e: Exception) {
-        throw IllegalArgumentException(e)
     }
+    if (dequeBrackets > 0)
+        throw IllegalArgumentException("not all square brackets [ ] have pair") // лишняя открывающая [
 
 
-    var counter = 0
-    while (processedCommands < limit && counter < commands.length) {
-        val currentCommand = commands[counter]
+    var count = 0
+    while (processedCommands < limit && count < commands.length) {
+        val currentCommand = commands[count]
         when (currentCommand) {
             ' ' -> {
             }
@@ -389,27 +365,31 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
                 if (answer[curPos] == 0) {
                     var passCond = 1
                     while (passCond > 0) {
-                        counter++
-                        if (commands[counter] == '[') passCond++
-                        else if (commands[counter] == ']') passCond--
+                        count++
+                        when (commands[count]) {
+                            '[' -> passCond++
+                            ']' -> passCond--
+                        }
                     }
                 }
             }
             ']' -> {
                 if (answer[curPos] != 0) {
-                    var passFactor = 1
-                    while (passFactor > 0) {
-                        counter--
-                        if (commands[counter] == ']') passFactor++
-                        else if (commands[counter] == '[') passFactor--
+                    var passCond = 1
+                    while (passCond > 0) {
+                        count--
+                        when (commands[count]) {
+                            ']' -> passCond++
+                            '[' -> passCond--
+                        }
                     }
                 }
             }
             else -> throw IllegalArgumentException()
         }
-        counter++
+        count++
         processedCommands++
-        if (curPos < 0 || curPos >= answer.size) throw IllegalStateException()
+        if (curPos < 0 || curPos >= answer.size) throw IllegalStateException() // Проверка на выход за границы
     }
     return answer.toList()
 }
