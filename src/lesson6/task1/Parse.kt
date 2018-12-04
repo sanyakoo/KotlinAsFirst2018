@@ -142,15 +142,9 @@ fun flattenPhoneNumber(phone: String): String {
  */
 fun bestLongJump(jumps: String): Int {
     val jumpsNew = "$jumps "
-    if (!jumpsNew.matches(Regex("""((\d+|-|%) +)*"""))) return -1
+    if (!jumpsNew.matches(Regex("""((\d+|-|%) +)*+"""))) return -1 //possessive quantifier used
     val parts = jumpsNew.split(Regex("""[\D]+""")).filter { it.isNotEmpty() }.map { it.toInt() }
-    var answer = -1
-    for (part in parts) {
-        if (part >= answer) {
-            answer = part
-        }
-    }
-    return answer
+    return parts.max() ?: -1
 }
 
 /**
@@ -165,7 +159,7 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     val jumpsNew = "$jumps "
-    val matchResult = Regex("""^(\d+ [+%\-]+ )*$""").find(jumpsNew) ?: return -1
+    if (!jumpsNew.matches(Regex("""^(\d+ [+%\-]+ )*+$"""))) return -1 //possessive quantifier used
     val parts = jumpsNew.split(Regex("""[\s%\-]+"""))
     var answer = -1
     var i = 0
@@ -196,7 +190,7 @@ fun bestHighJump(jumps: String): Int {
 fun plusMinus(expression: String): Int {
     if (expression.matches(Regex("\\d+"))) return expression.toInt()
     if (!(expression.matches(Regex("""^(\d+\s+[+-]\s+)*\d+$""")))) throw IllegalArgumentException()
-    val digitsAndSymbols = expression.split(" ")
+    val digitsAndSymbols = expression.split("""\s+""")
     val (digits, symbols) = digitsAndSymbols.withIndex().partition { (i, _) -> i % 2 == 0 }
     var answer = digits.first().value.toInt()
     for ((i, symbol) in symbols.withIndex()) {
@@ -247,7 +241,7 @@ fun mostExpensive(description: String): String {
     try {
         for (goodAndPrice in splited) {
             val split = goodAndPrice.split(" ")
-            if (split.size < 2) return ""
+            if (split.size != 2) return ""
             val next = split[1].toDouble()
             if (next < 0)
                 return ""
@@ -338,13 +332,15 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
 
 
     var dequeBrackets = 0
-    commands.forEach {
-        if (it == '[') dequeBrackets++
-        else if (it == ']') {
-            dequeBrackets--
-            if (dequeBrackets < 0)
-                throw IllegalArgumentException("not all square brackets [ ] have pair") // лишняя ]
+    for (cmd in commands) {
+        when (cmd) {
+            '[' -> dequeBrackets++
+            ']' -> {
+                dequeBrackets--
+                if (dequeBrackets < 0)
+                    throw IllegalArgumentException("not all square brackets [ ] have pair") // лишняя ]
 
+            }
         }
     }
     if (dequeBrackets > 0)
