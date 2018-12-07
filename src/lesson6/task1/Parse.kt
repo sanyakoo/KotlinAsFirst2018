@@ -160,20 +160,12 @@ fun bestLongJump(jumps: String): Int {
 fun bestHighJump(jumps: String): Int {
     val jumpsNew = "$jumps "
     if (!jumpsNew.matches(Regex("""^(\d+ [+%\-]+ )*+$"""))) return -1 //possessive quantifier used
-    val parts = jumpsNew.split(Regex("""[\s%\-]+"""))
+    val parts = jumpsNew.split(" ")
     var answer = -1
-    var i = 0
-    while (i < parts.size) {
-        try {
-            val partsInInt = parts[i++].toInt()
-            if (parts[i] == "+") {
-                answer = maxOf(partsInInt, answer)
-                ++i
-            }
-        } catch (e: NumberFormatException) {
-            continue
+    for (i in 1 until parts.size step 2) {
+        if (parts[i].contains("+")) {
+            answer = maxOf(parts[i - 1].toInt(), answer)
         }
-
     }
     return answer
 }
@@ -190,7 +182,7 @@ fun bestHighJump(jumps: String): Int {
 fun plusMinus(expression: String): Int {
     if (expression.matches(Regex("\\d+"))) return expression.toInt()
     if (!(expression.matches(Regex("""^(\d+\s+[+-]\s+)*\d+$""")))) throw IllegalArgumentException()
-    val digitsAndSymbols = expression.split("""\s+""")
+    val digitsAndSymbols = expression.split(Regex("""\s+"""))
     val (digits, symbols) = digitsAndSymbols.withIndex().partition { (i, _) -> i % 2 == 0 }
     var answer = digits.first().value.toInt()
     for ((i, symbol) in symbols.withIndex()) {
