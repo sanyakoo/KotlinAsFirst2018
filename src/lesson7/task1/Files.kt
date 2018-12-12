@@ -54,10 +54,18 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  *
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
-    var result = mutableMapOf<String, Int>()
-    var text = File(inputName).readText().toLowerCase()
+    val result = mutableMapOf<String, Int>()
+    val text = File(inputName).readText()
     for (substring in substrings) {
-        result[substring] = Regex(substring.toLowerCase()).findAll(text).toList().size
+        var startIdx = 0
+        var counter = 0
+        while (true) {
+            val foundIdx = text.indexOf(substring, startIdx, true)
+            if (foundIdx < 0) break
+            counter++
+            startIdx = foundIdx + 1
+        }
+        result[substring] = counter
     }
     return result
 }
@@ -77,7 +85,28 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val text = File(inputName).readText()
+    val sb = StringBuilder()
+    var doModify = false
+    for (i in 0 until text.length) {
+        var ch = text[i]
+
+        if (doModify) {
+            ch = when (ch) {
+                'Ы' -> 'И'
+                'ы' -> 'и'
+                'Я' -> 'А'
+                'я' -> 'а'
+                'Ю' -> 'У'
+                'ю' -> 'у'
+                else -> ch
+            }
+        }
+        sb.append(ch)
+
+        doModify = (ch in "ЖжЧчШшЩщ")
+    }
+    File(outputName).writeText(sb.toString())
 }
 
 /**
@@ -98,7 +127,21 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    var maxLineLength = 0
+    val lineList = mutableListOf<String>()
+    for (line in File(inputName).readLines()) {
+        val lineTrimmed = line.trim()
+        maxLineLength = max(maxLineLength, lineTrimmed.length)
+        lineList.add(lineTrimmed)
+    }
+    File(outputName).bufferedWriter().use {
+        for (line in lineList) {
+            val spaces = " ".repeat((maxLineLength - line.length) / 2)
+            it.write(spaces)
+            it.write(line)
+            it.newLine()
+        }
+    }
 }
 
 /**
@@ -129,7 +172,37 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    var maxLineLength = 0
+    val lineList = mutableListOf<String>()
+    for (line in File(inputName).readLines()) {
+        var lineTrimmed = line.trim()
+        lineTrimmed = lineTrimmed.replace(Regex("""\s+"""), " ")
+        maxLineLength = max(maxLineLength, lineTrimmed.length)
+        lineList.add(lineTrimmed)
+    }
+
+    File(outputName).bufferedWriter().use {
+        for (line in lineList) {
+            if (line.isNotEmpty()) {
+                val words = line.split(' ')
+                val sb = StringBuilder(words[0])
+                val gapCount = words.size - 1
+                if (gapCount > 0) {
+                    val spacesCountInLine = maxLineLength - line.length + gapCount
+                    val spacesBtwWords = spacesCountInLine / gapCount
+                    var spacesReminder = spacesCountInLine % gapCount
+
+                    for (i in 1 until words.size) {
+                        sb.append(" ".repeat(spacesBtwWords))
+                        if (spacesReminder-- > 0) sb.append(' ')
+                        sb.append(words[i])
+                    }
+                }
+                it.write(sb.toString())
+            }
+            it.newLine()
+        }
+    }
 }
 
 /**
