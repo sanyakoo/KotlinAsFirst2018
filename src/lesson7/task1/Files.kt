@@ -176,8 +176,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     var maxLineLength = 0
     val lineList = mutableListOf<String>()
     for (line in File(inputName).readLines()) {
-        var lineTrimmed = line.trim()
-        lineTrimmed = lineTrimmed.replace(Regex("""\s+"""), " ")
+        val lineTrimmed = line.trim().replace(Regex("""\s+"""), " ")
         maxLineLength = max(maxLineLength, lineTrimmed.length)
         lineList.add(lineTrimmed)
     }
