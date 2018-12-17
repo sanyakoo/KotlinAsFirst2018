@@ -89,11 +89,10 @@ fun sibilants(inputName: String, outputName: String) {
     val text = File(inputName).readText()
     val sb = StringBuilder()
     var doModify = false
-    for (i in 0 until text.length) {
-        var ch = text[i]
-
+    for (ch in text) {
+        var ch2 = ch
         if (doModify) {
-            ch = when (ch) {
+            ch2 = when (ch) {
                 'Ы' -> 'И'
                 'ы' -> 'и'
                 'Я' -> 'А'
@@ -103,9 +102,9 @@ fun sibilants(inputName: String, outputName: String) {
                 else -> ch
             }
         }
-        sb.append(ch)
+        sb.append(ch2)
 
-        doModify = (ch in "ЖжЧчШшЩщ")
+        doModify = (ch2 in "ЖжЧчШшЩщ")
     }
     File(outputName).writeText(sb.toString())
 }
@@ -223,7 +222,18 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val dict = mutableMapOf<String, Int>()
+    for (line in File(inputName).readLines()) {
+        val splitted = line.split(Regex("""[^a-zA-Zа-яЁёА-Я]+"""))
+        for (word in splitted) {
+            if (word.isEmpty()) continue
+            dict[word.toLowerCase()] = (dict[word.toLowerCase()] ?: 0) + 1
+        }
+    }
+
+    return dict.entries.sortedByDescending { it.value }.take(20).associateBy({ it.key }, { it.value })
+}
 
 /**
  * Средняя
@@ -261,7 +271,20 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val text = File(inputName).readText()
+    val sb = StringBuilder()
+    for (c in text) {
+        val lowerCh = c.toLowerCase()
+        val upperCh = c.toUpperCase()
+
+        var r = (dictionary[lowerCh] ?: dictionary[upperCh] ?: "$c").toLowerCase()
+        if (c.isUpperCase()) {
+            r = "${r[0].toUpperCase()}${r.substring(1).toLowerCase()}"
+        }
+        sb.append(r)
+    }
+
+    File(outputName).writeText(sb.toString())
 }
 
 /**
@@ -289,7 +312,23 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val ww = mutableMapOf<Int, MutableList<String>>()
+    var maxLen = 0
+    for (word in File(inputName).readLines()) {
+        if (word.toLowerCase().toSet().size < word.length) continue
+        val list = ww[word.length] ?: mutableListOf()
+        list.add(word)
+        ww[word.length] = list
+
+        maxLen = max(maxLen, word.length)
+
+    }
+
+    File(outputName).bufferedWriter().use {
+        if (maxLen > 0) {
+            it.write(ww[maxLen]!!.joinToString(separator = ", "))
+        }
+    }
 }
 
 /**
