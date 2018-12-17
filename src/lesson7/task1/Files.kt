@@ -278,7 +278,7 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         val upperCh = c.toUpperCase()
 
         var r = (dictionary[lowerCh] ?: dictionary[upperCh] ?: "$c").toLowerCase()
-        if (c.isUpperCase()) {
+        if (c.isUpperCase() && r.isNotEmpty()) {
             r = "${r[0].toUpperCase()}${r.substring(1).toLowerCase()}"
         }
         sb.append(r)
