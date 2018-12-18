@@ -369,7 +369,64 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val markerOpenClose = mutableMapOf("*" to false, "**" to false, "~~" to false, "***" to false)
+    val sb = StringBuilder()
+    var paragraphs = false
+    for (line in File(inputName).readLines()) {
+        if (line.isEmpty()) {
+            paragraphs = true
+            sb.append("</p><p>")
+        }
+        var i = 0
+        while (i < line.length) {
+            val ch = line[i]
+            when {
+                ch == '*' -> when {
+                    (i < line.length - 2 && line[i + 1] == '*' && line[i + 2] != '*') ||
+                            (i == line.length - 2 && line[i + 1] == '*')|| (markerOpenClose["**"]!!) -> {
+                        sb.append(getTag(markerOpenClose, "**", "<b>", "</b>"))
+                        ++i
+                    }
+                    (i < line.length - 1 && line[i + 1] != '*') || (i == line.length - 1) ||
+                            (markerOpenClose["*"]!!) -> {
+                        sb.append(getTag(markerOpenClose, "*", "<i>", "</i>"))
+                    }
+                    (i < line.length - 3 && line[i + 1] == '*' && line[i + 2] == '*' && line[i + 3] != '*') ||
+                            (i == line.length - 3 && line[i + 1] == '*' && line[i + 2] == '*') -> {
+                        sb.append(getTag(markerOpenClose, "***", "<b><i>", "</i></b>"))
+                        i += 2
+                    }
+                }
+                ch == '~' -> when {
+                    (i < line.length - 2 && line[i + 1] == '~' && line[i + 2] != '~') ||
+                            (i == line.length - 2 && line[i + 1] == '~') -> {
+                        sb.append(getTag(markerOpenClose, "~~", "<s>", "</s>"))
+                        ++i
+                    }
+                }
+                else -> {
+                    sb.append(ch)
+                }
+            }
+            ++i
+        }
+
+    }
+    File(outputName).bufferedWriter().use {
+        it.write("<html><body>")
+        if (paragraphs) it.write("<p>")
+        it.write(sb.toString())
+        if (paragraphs) it.write("</p>")
+        it.write("</body></html>")
+    }
+}
+
+
+fun getTag(markerOpenClose: MutableMap<String, Boolean>, srcMarker: String, openTag: String, closeTag: String): String {
+    val isCloseTag = markerOpenClose[srcMarker]!!
+    markerOpenClose[srcMarker] = !isCloseTag
+    return if (isCloseTag) closeTag else openTag
+
 }
 
 /**
@@ -466,7 +523,53 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    val sb = StringBuilder()
+    var listLevel = -1
+
+    val listOpenedTags = mutableListOf<String>()
+    val lines = File(inputName).readLines()
+    for ((j, line) in lines.withIndex()) {
+        var i = 0
+
+        while (line[i] == ' ') {
+            ++i
+        }
+
+        val curListLevel = i / 4
+
+        if (line[i] == '*') {
+            if (curListLevel > listLevel) {
+                sb.append("<ul>")
+                listOpenedTags.add("</li></ul>")
+            } else if (curListLevel < listLevel) {
+                sb.append(listOpenedTags.removeAt(listOpenedTags.size - 1))
+            }
+        } else {
+            if (curListLevel > listLevel) {
+                sb.append("<ol>")
+                listOpenedTags.add("</li></ol>")
+            } else if (curListLevel < listLevel) {
+                sb.append(listOpenedTags.removeAt(listOpenedTags.size - 1))
+            }
+            i = line.indexOf('.', i)
+        }
+
+        if (listLevel >= curListLevel) sb.append("</li>")
+        listLevel = curListLevel
+        sb.append("<li>")
+        sb.append(line.substring(i + 1))
+        if (j < lines.size - 1) sb.append("\n")
+
+    }
+
+    for (v in listOpenedTags.reversed()) {
+        sb.append(v)
+    }
+    File(outputName).bufferedWriter().use {
+        it.write("<html><body>")
+        it.write(sb.toString())
+        it.write("</body></html>")
+    }
 }
 
 /**
